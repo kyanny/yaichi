@@ -33,7 +33,7 @@ Nginx.echo <<-HTML
       data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png">
     </a>
     <h1>Proxy-able Containers</h1>
-    <ul>
+    <ul id="proxy-able-containers">
     #{
       containers.flat_map do |c|
         me.exposed_ports.select {|_, local| c.listening?(me, local) }.map do |remote, local|
@@ -48,6 +48,22 @@ Nginx.echo <<-HTML
       containers.map {|c| "<li>#{c.name}</li>" }.join("\n")
     }
     </ul>
+    <script>
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            console.log(xhr.responseText);
+            var ul = document.getElementById('proxy-able-containers');
+            ul.innerHTML = xhr.responseText;
+          }
+        }
+      };
+      setInterval(function() {
+        xhr.open('GET', '/foo');
+        xhr.send();
+      }, 5000);
+    </script>
   </body>
 </html>
 HTML
